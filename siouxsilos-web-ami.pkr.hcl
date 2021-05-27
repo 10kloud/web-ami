@@ -6,6 +6,7 @@
 
 locals {
   prefix = "clod2021-g5pw"
+  postfix = split("-", uuidv4())[0]
   # Ubuntu 20.04
   ami_id = "ami-05f7491af5eef733a"
   # Frankfurt
@@ -26,7 +27,7 @@ packer {
 }
 
 source "amazon-ebs" "webserver" {
-  ami_name = "${local.prefix}-siouxsilos"
+  ami_name = "${local.prefix}-siouxsilos-${local.postfix}"
   ami_description = "WebServer used by 10kloud for SiouxSilos"
 
   instance_type = local.instance_type
@@ -75,5 +76,9 @@ build {
 
   provisioner "shell" {
     script = "./scripts/nginx-reload.sh"
+  }
+
+  provisioner "shell" {
+    script = "./scripts/setup-env.sh"
   }
 }
